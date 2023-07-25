@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="dark">
 <head>
+	<base href="/blogit/">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BlogIt</title>
@@ -9,7 +10,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 	<link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body class="container">
+<body class="container pb-5">
 	<header class="row border-bottom py-3 mb-4">
 		<div class="row flex-nowrap justify-content-end align-items-center pe-0">
 			<div class="col-lg-4 col-8 text-center blog-header-logo">

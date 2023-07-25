@@ -1,39 +1,23 @@
-/* stylelint-disable stylistic/selector-list-comma-newline-after */
-.blog-header-logo {
+.blog-header-logo, .blog-footer-logo {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
   font-size: 2.25rem;
 }
 
-.blog-header-logo:hover {
+.blog-header-logo, .blog-footer-logo {
+  &:hover {
   text-decoration: none;
+  }
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
 }
 
-.flex-auto {
-  flex: 0 0 auto;
-}
-
-.h-250 { height: 250px; }
-@media (min-width: 768px) {
-  .h-md-250 { height: 250px; }
-}
-
-/* Pagination */
-.blog-pagination {
-  margin-bottom: 4rem;
-}
-
-/*
- * Blog posts
- */
 .blog-post {
   margin-bottom: 4rem;
 }
-.blog-post-meta {
-  margin-bottom: 1.25rem;
+
+.blog-post-info {
   color: #727272;
 }
 
@@ -67,7 +51,12 @@ h1, h2, h3, h4, h5, h6 {
     text-overflow: ellipsis;
   }
 }
-  
+
+.blog-post-thumb {
+	height: 300px;
+	filter: brightness(0.5);
+	background: center center/cover no-repeat;
+}
 
 @media (max-width: 992px) {
   .blog-header-logo {
