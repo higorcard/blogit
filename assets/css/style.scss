@@ -6,9 +6,7 @@
 .blog-primary-font {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
   font-size: 2.25rem;
-}
 
-.blog-primary-font {
   &:hover {
   text-decoration: none;
   }
@@ -16,6 +14,17 @@
 
 h1, h2, h3, h4, h5, h6 {
   font-family: "Playfair Display", Georgia, "Times New Roman", serif/*rtl:Amiri, Georgia, "Times New Roman", serif*/;
+}
+
+a {
+  span {
+    display: none;
+  }
+	&:hover {
+		span {
+			display: block;
+		}
+	}
 }
 
 .blog-post {
@@ -89,11 +98,22 @@ h1, h2, h3, h4, h5, h6 {
   }
 }
 
-@media (max-width: 992px) {
-  header {
-    .blog-primary-font {
-      text-align: left !important;
-    }
+.blog-card {
+  .card-body {
+    height: 250px;
+    background: center center/cover no-repeat;
+  }
+}
+
+.form-check-input {
+  &:checked {
+    background-color: #343a40;
+    border-color: rgba(222, 226, 230, 0.75);
+  }
+  &:focus {
+    box-shadow: none;
+    border-color: rgba(222, 226, 230, 0.75);
+    background-image: url('../img/circle.svg') !important;
   }
 }
 
