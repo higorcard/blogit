@@ -17,7 +17,7 @@
 				<a class="fst-italic text-body-emphasis text-decoration-none" href="#">BlogIt</a>
 			</div>
 			<div class="col-4 d-flex justify-content-end align-items-center pe-0">
-				<a class="btn btn-sm btn-dark fs-6 d-flex align-items-center" href="#">Sign up <i class="bi bi-box-arrow-in-right fs-5 ms-2"></i></a>
+				<a class="btn btn-sm btn-dark fs-6 d-flex align-items-center" href="pages/sign-in.php">Sign up <i class="bi bi-box-arrow-in-right fs-5 ms-2"></i></a>
 			</div>
 		</div>
 	</header>

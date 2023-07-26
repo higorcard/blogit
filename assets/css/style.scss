@@ -76,6 +76,14 @@ h1, h2, h3, h4, h5, h6 {
   gap: 24px;
   border-color: #343a40 !important;
   
+  .link-danger {
+    color: #727272 !important;
+
+    &:hover {
+      color: #b02a37 !important;
+    }
+  }
+  
   &:last-child {
     border: none !important;
   }

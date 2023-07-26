@@ -72,6 +72,12 @@ h1, h2, h3, h4, h5, h6 {
   gap: 24px;
   border-color: #343a40 !important;
 }
+.blog-comment .link-danger {
+  color: #727272 !important;
+}
+.blog-comment .link-danger:hover {
+  color: #b02a37 !important;
+}
 .blog-comment:last-child {
   border: none !important;
 }
