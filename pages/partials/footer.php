@@ -1,7 +1,7 @@
 	<div class="container fixed-bottom bg-dark">
 		<footer class="row d-flex flex-wrap justify-content-between align-items-center py-3 border-top">
 			<p class="col-6 mb-0 mt-2 text-body-secondary">© 2023 Company, Inc</p>
-			<a class="col-6 fs-5 fst-italic text-body-emphasis text-decoration-none text-end blog-footer-logo" href="#">BlogIt</a>
+			<a class="col-6 fs-5 fst-italic text-body-emphasis text-decoration-none text-end blog-primary-font" href="#">BlogIt</a>
 		</footer>
 	</div>
 

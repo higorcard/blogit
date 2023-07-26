@@ -13,7 +13,7 @@
 <body class="container pb-5">
 	<header class="row border-bottom py-3 mb-4">
 		<div class="row flex-nowrap justify-content-end align-items-center pe-0">
-			<div class="col-lg-4 col-8 text-center blog-header-logo">
+			<div class="col-lg-4 col-8 text-center blog-primary-font">
 				<a class="fst-italic text-body-emphasis text-decoration-none" href="#">BlogIt</a>
 			</div>
 			<div class="col-4 d-flex justify-content-end align-items-center pe-0">
