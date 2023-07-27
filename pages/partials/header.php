@@ -26,7 +26,7 @@
 	<header class="row border-bottom py-3 mb-4">
 		<div class="row flex-nowrap justify-content-end align-items-center px-0">
 			<div class="col-8 blog-primary-font ps-0">
-				<a class="fst-italic text-body-emphasis text-decoration-none" href="#">BlogIt</a>
+				<a class="fst-italic text-body-emphasis text-decoration-none" href="./">BlogIt</a>
 			</div>
 			<div class="col-4 d-flex justify-content-end align-items-center pe-0">
 				<?php if(!isset($_SESSION['user_id']))	: ?>
@@ -39,7 +39,7 @@
 					<?php endif; if($page_name != 'admin.php')	: ?>
 						<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="pages/admin.php"><i class="bi bi-gear fs-4"></i><span class="ms-2">Admin</span></a>
 					<?php endif; ?>
-					<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="#"><i class="bi bi-box-arrow-right fs-4"></i> <span class="ms-2">Log out</span></a>
+					<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="int/logout.php"><i class="bi bi-box-arrow-right fs-4"></i> <span class="ms-2">Log out</span></a>
 				<?php endif; ?>
 			</div>
 		</div>

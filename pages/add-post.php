@@ -1,4 +1,10 @@
-<?php require_once 'partials/header.php'; ?>
+<?php
+
+  require_once '../int/check-login.php';
+
+  require_once 'partials/header.php';
+
+?>
 
 <form class="row w-100 mt-5" method="post">
   <div class="col-12 d-flex justify-content-between align-items-center px-0 mb-4">

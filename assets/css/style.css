@@ -214,8 +214,23 @@ a:hover span {
   border: none !important;
 }
 .blog-card .card-body {
-  height: 250px;
+  height: 230px;
   background: center center/cover no-repeat;
+}
+@media (min-width: 992px) {
+  .blog-card {
+    width: calc(33.33333333% - 16px) !important;
+  }
+}
+@media (min-width: 576px) and (max-width: 992px) {
+  .blog-card {
+    width: calc(50% - 12px) !important;
+  }
+}
+@media (max-width: 576px) {
+  .blog-card {
+    width: 100% !important;
+  }
 }
 
 .form-control:focus {

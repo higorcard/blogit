@@ -86,8 +86,18 @@ a {
 
   &card {
     .card-body {
-      height: 250px;
+      height: 230px;
       background: center center/cover no-repeat;
+    }
+
+    @media (min-width: 992px) {
+      width: calc(33.33333333% - 16px) !important;
+    }
+    @media (min-width: 576px) and (max-width: 992px) {
+      width: calc(50% - 12px) !important;
+    }
+    @media (max-width: 576px) {
+      width: 100% !important;
     }
   }
 }

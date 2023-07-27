@@ -1,6 +1,10 @@
-<?php require_once 'partials/header.php'; ?>
+<?php 
+	require_once '../int/check-login.php';
 
-<div class="row">
+	require_once 'partials/header.php';
+?>
+
+<div class="row d-flex mb-5" style="gap: 24px;">
 	<div class="card col-lg-4 col-md-6 col-sm-12 px-0 blog-card">
 		<div class="card-body" style="background-image: url(assets/img/productive.png);"></div>
 		<div class="card-footer d-flex flex-column">

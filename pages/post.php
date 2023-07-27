@@ -2,7 +2,7 @@
 
 <div class="row position-relative">
   <div class="blog-post-thumb rounded-3" style="background-image: url('assets/img/productive.png');"></div>
-  <h1 class="position-absolute top-50 start-50 translate-middle display-3 fst-italic text-body-emphasis text-center">How to be more productive?</h1>
+  <h1 class="position-absolute top-50 start-50 translate-middle blog-primary-font display-1 fst-italic text-body-emphasis text-center" style="font-size: 3.25rem;">How to be more productive?</h1>
 </div>
 
 <div class="row mt-3 mb-3">
