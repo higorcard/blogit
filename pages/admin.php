@@ -10,8 +10,8 @@
 					<input class="form-check-input" type="checkbox" role="switch" id="switch" checked>
 					<label class="form-check-label" for="switch">enabled</label>
 				</div>
-				<a href="" class="ms-auto me-4"><i class="bi bi-pencil fs-5 text-dark-emphasis"></i></a>
-				<a href="" class="" ><i class="bi bi-trash fs-5 text-dark-emphasis"></i></a>
+				<a href="pages/edit-post.php" class="ms-auto me-4"><i class="bi bi-pencil fs-5 text-dark-emphasis"></i></a>
+				<a href="#"><i class="bi bi-trash fs-5 text-dark-emphasis"></i></a>
 			</div>
 		</div>
 	</div>

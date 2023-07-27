@@ -37,11 +37,11 @@
   </style>
 </head>
 <body class="container d-flex align-items-center justify-content-center">
-	<a class="position-absolute top-0 start-0 m-4 btn btn-sm btn-dark fs-6 d-flex align-items-center" href="#"><i class="bi bi-arrow-left fs-5 me-2"></i> Go home</a>
+	<a class="position-absolute top-0 start-0 m-4 btn btn-sm btn-dark fs-5 d-flex align-items-center" href="javascript:history.back()"><i class="bi bi-arrow-left fs-4 me-2"></i> Go home</a>
+  <a class="position-absolute top-0 start-middle mt-4 blog-primary-font fst-italic text-body-emphasis text-decoration-none" href="#">BlogIt</a>
 
   <main class="form-signin w-100 m-auto">
     <form>
-			<a class="blog-primary-font fst-italic text-body-emphasis text-decoration-none" href="#">BlogIt</a>
       <p class="h3 mt-4 mb-3 fw-normal">Sign in</p>
 
       <div class="form-floating">
@@ -52,7 +52,7 @@
         <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
         <label for="floatingPassword">Password</label>
       </div>
-      <button class="btn btn-secondary w-100 my-3 py-2" type="submit">Login</button>
+      <button class="btn btn-light fs-5 w-100 my-3 py-2" type="submit">Login</button>
 			<span class="text-dark-emphasis">or <a class="text-dark-emphasis" href="pages/sign-up.php">create an account</a> for free!</span>
     </form>
   </main>  
