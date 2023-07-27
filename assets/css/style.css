@@ -147,6 +147,13 @@
   background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-link" viewBox="0 0 16 16"><path d="M6.354 5.5H4a3 3 0 0 0 0 6h3a3 3 0 0 0 2.83-4H9c-.086 0-.17.01-.25.031A2 2 0 0 1 7 10.5H4a2 2 0 1 1 0-4h1.535c.218-.376.495-.714.82-1z"/>  <path d="M9 5.5a3 3 0 0 0-2.83 4h1.098A2 2 0 0 1 9 6.5h3a2 2 0 1 1 0 4h-1.535a4.02 4.02 0 0 1-.82 1H12a3 3 0 1 0 0-6H9z"/></svg>') !important;
 }
 
+a span {
+  display: none;
+}
+a:hover span {
+  display: block;
+}
+
 .row {
   max-width: 960px;
   margin: 0 auto;
@@ -159,39 +166,12 @@
 .blog-primary-font:hover {
   text-decoration: none;
 }
-
-h1, h2, h3, h4, h5, h6 {
-  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
-}
-
-a span {
-  display: none;
-}
-a:hover span {
-  display: block;
-}
-
 .blog-post {
   margin-bottom: 4rem;
 }
-
 .blog-post-info {
   color: #727272;
 }
-
-.btn-not-focus, .btn-not-focus:active {
-  border: none !important;
-}
-
-.form-control:focus {
-  border-color: #949494;
-  box-shadow: 0 0 0 0.25rem rgba(136, 136, 136, 0.25);
-}
-
-.rounded-3 {
-  border-radius: 0.75rem !important;
-}
-
 .blog-article div:first-child {
   height: 310px;
   background: center center/cover no-repeat;
@@ -207,13 +187,11 @@ a:hover span {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 .blog-post-thumb {
   height: 300px;
   filter: brightness(0.5);
   background: center center/cover no-repeat;
 }
-
 .blog-profile-photo {
   min-width: 64px;
   min-height: 64px;
@@ -222,7 +200,6 @@ a:hover span {
   padding-right: 6px;
   text-transform: uppercase;
 }
-
 .blog-comment {
   gap: 24px;
   border-color: #343a40 !important;
@@ -236,10 +213,14 @@ a:hover span {
 .blog-comment:last-child {
   border: none !important;
 }
-
 .blog-card .card-body {
   height: 250px;
   background: center center/cover no-repeat;
+}
+
+.form-control:focus {
+  border-color: #949494;
+  box-shadow: 0 0 0 0.25rem rgba(136, 136, 136, 0.25);
 }
 
 .form-check-input:checked {
@@ -250,6 +231,14 @@ a:hover span {
   box-shadow: none;
   border-color: rgba(222, 226, 230, 0.75);
   background-image: url("../img/circle.svg") !important;
+}
+
+.btn-not-focus, .btn-not-focus:active {
+  border: none !important;
+}
+
+.rounded-3 {
+  border-radius: 0.75rem !important;
 }
 
 @media (max-width: 768px) {
