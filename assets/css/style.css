@@ -217,6 +217,9 @@ a:hover span {
   height: 230px;
   background: center center/cover no-repeat;
 }
+.blog-card .card-footer {
+  min-height: 135px !important;
+}
 @media (min-width: 992px) {
   .blog-card {
     width: calc(33.33333333% - 16px) !important;

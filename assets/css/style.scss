@@ -89,6 +89,9 @@ a {
       height: 230px;
       background: center center/cover no-repeat;
     }
+    .card-footer {
+      min-height: 135px !important;
+    }
 
     @media (min-width: 992px) {
       width: calc(33.33333333% - 16px) !important;

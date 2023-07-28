@@ -35,7 +35,7 @@
 					<?php if($page_name != 'add-post.php') : ?>
 						<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="pages/add-post.php"><i class="bi bi-plus-circle fs-4"></i><span class="ms-2">Post</span></a>
 					<?php endif; if($page_name != 'index.php') : ?>
-						<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="#"><i class="bi bi-house fs-4 mb-1"></i><span class="ms-2">Home</span></a>
+						<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="./"><i class="bi bi-house fs-4 mb-1"></i><span class="ms-2">Home</span></a>
 					<?php endif; if($page_name != 'admin.php')	: ?>
 						<a class="btn btn-sm btn-dark fs-5 d-flex align-items-center ms-3" href="pages/admin.php"><i class="bi bi-gear fs-4"></i><span class="ms-2">Admin</span></a>
 					<?php endif; ?>
