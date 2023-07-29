@@ -1,5 +1,10 @@
 @import '_text-editor.scss';
 
+::selection {
+  color: #212529;
+  background-color: #dee2e6;
+}
+
 a {
   span {
     display: none;
@@ -102,6 +107,12 @@ a {
     @media (max-width: 576px) {
       width: 100% !important;
     }
+  }
+
+  &post-content {
+    display: block !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
   }
 }
 

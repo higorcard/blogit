@@ -13,7 +13,7 @@ function getPosts() {
     response.forEach(function(i) {
       var status = (i.status == 'public') ? 'checked' : '';
       
-      $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(assets/img/" + i.thumb + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 fw-bold text-dark-emphasis' style='overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; text-overflow: ellipsis; -webkit-box-orient: vertical;'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
+      $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 fw-bold text-dark-emphasis' style='overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; text-overflow: ellipsis; -webkit-box-orient: vertical;'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
     });
 
     // set post id for delete form
@@ -61,6 +61,19 @@ $(window).ready(function() {
 
   hideAlerts();
   
+  // checks if text-editor length is smaller than required 
+  $('#addPostForm').submit(function(e) {
+    var contentLength = $('.blog-chars-counter').find('span').text();
+    
+    if(contentLength < 500) {
+      e.preventDefault();
+
+      $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Only " + (500 - contentLength)  + " characters left.</div>");
+      hideAlerts();
+    }
+  });
+
+  // performs the deletion of the post
   $('#deleteModal').submit(function(e) {
     e.preventDefault();
   
@@ -87,14 +100,19 @@ $(window).ready(function() {
   });
   
   // edit text-editor default styles
+  var textEditorHtml = $("iframe").contents().find('html');
   var textEditorHead = $("iframe").contents().find('head');
   var textEditorBody = $("iframe").contents().find('body');
 
+  textEditorHtml.css('height', '100%');
+  textEditorBody.css('margin', '0');
+  textEditorBody.css('height', '100%');
+  textEditorBody.css('padding', '10px');
   textEditorBody.css('color', '#dee2e6');
-  textEditorBody.css('overflow', 'hidden');
   textEditorBody.css('font-size', '1.2rem');
-  textEditorBody.css('background-color', '#2b3035');
-  textEditorHead.append("<style> a { color: #f8f9fa; } </style>");
+  textEditorBody.css('box-sizing', 'border-box');
+  textEditorBody.css('background-color', '#343a40');
+  textEditorHead.append("<style> ::selection { background-color: rgba(33,37,41, 1); } a { color: #f8f9fa; } p:first-child { margin-top: 0; } </style>");
   textEditorBody.css('font-family', "system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue','Noto Sans','Liberation Sans',Arial,sans-serif,'Apple Color Emoji','Segoe UI Emoji','Segoe UI Symbol','Noto Color Emoji'");
 });
 
@@ -103,7 +121,24 @@ sceditor.create($('#text-editor')[0], {
 	format: 'bbcode',
   plugins: 'plaintext, undo, autosave',
 	style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css',
-  height: '350px',
+  height: '500px',
   resizeEnabled: false,
   toolbar: 'bold,italic,underline,strike|left,center,right,justify|size,removeformat|bulletlist,orderedlist,indent,outdent|horizontalrule,link'
 });
+
+// count chars of the text-editor
+var regex = /\n|\[b\]|\[\/b\]|\[i\]|\[\/i\]|\[u\]|\[\/u\]|\[s\]|\[\/s\]|\[hr\]|\[ul\]|\[\/ul\]|\[ol\]|\[\/ol\]|\[li\]|\[\/li\]|\[left\]|\[\/left\]|\[right\]|\[\/right\]|\[center\]|\[\/center\]|\[justify\]|\[\/justify\]|\[size=1\]|\[size=2\]|\[size=3\]|\[size=4\]|\[size=5\]|\[size=6\]|\[size=7\]|\[\/size\]|\[url=([^\]]+)\]|\[\/url\]/g;
+
+function getCharsLength() {
+  var textEditorLenght = sceditor.instance($('#text-editor')[0]).val().replace(regex, '').length;
+  
+  $('.blog-chars-counter').find('span').text(textEditorLenght);
+
+  if(textEditorLenght < 500 || textEditorLenght > 5000) {
+    $('.blog-chars-counter').find('span').addClass('text-danger-emphasis');
+  } else {
+    $('.blog-chars-counter').find('span').removeClass('text-danger-emphasis');
+  }
+}
+
+sceditor.instance($('#text-editor')[0]).keyUp(getCharsLength).nodeChanged(getCharsLength);

@@ -1,5 +1,7 @@
 <?php
 
+	session_start();
+
 	$page_name = basename($_SERVER['PHP_SELF']);
 
 ?>

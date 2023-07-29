@@ -40,7 +40,7 @@
 </div>
 
 <div class="row mb-5 blog-article">
-	<div class="col-sm-12 col-lg-6 col-md-6 p-0 rounded-3" style="background-image: url(assets/img/productive.png);"></div>
+	<div class="col-sm-12 col-lg-6 col-md-6 p-0 rounded-3 border border-3 border-light" style="background-image: url(assets/img/productive.png);"></div>
 	<div class="col-sm-12 col-lg-6 col-md-6 d-flex flex-column ps-4 pe-0">
 		<h2 class="blog-primary-font blog-text-ellipsis display-6 fst-italic text-dark-emphasis" style="overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; text-overflow: ellipsis; -webkit-box-orient: vertical;">How to be more productive?</h2>
 		<p class="text-body-secondary">Last updated 3 mins ago · 3 comments</p>
