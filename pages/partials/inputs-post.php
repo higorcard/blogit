@@ -4,7 +4,7 @@
 </div>
 <div class="col-lg-5 col-md-6 col-sm-12 p-0 ps-md-3 mt-sm-4 mt-md-0">
   <label for="thumbnail" class="form-label px-0">Thumbnail</label>
-  <input class="form-control" type="file" name="thumbnail" id="thumbnail">
+  <input class="form-control" type="file" name="thumbnail" id="thumbnail" accept=".png, .jpg, .jpeg, .webp" max-size="1500">
 </div>
 <label for="text-editor" class="form-label px-0 mt-4">Content</label>
 <textarea class="blog-text-editor" name="content" id="text-editor"><?php if(isset($post['text'])) { echo $post['text']; } elseif(isset($_POST['content'])) { echo $_POST['content']; } else { echo ''; } ?></textarea>

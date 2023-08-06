@@ -2,11 +2,13 @@
 
   date_default_timezone_set('America/Sao_Paulo');
 
+  define('ROOT', 'http://localhost');
+
   $database = (object) [
     'dbname' => 'blogit',
-    'host' => 'localhost',
+    'host' => 'mysql',
     'username' => 'root',
-    'password' => ''
+    'password' => 'blogit_db_pass'
   ];
 
   try {

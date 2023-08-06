@@ -1,19 +1,27 @@
-function hideAlerts() {
+const absolutePath = window.location.origin;
+
+function hideAlert() {
   $(".alert").delay(800).fadeTo(2000, 500).slideUp(400, function() {
     $(this).alert('close');
   });
 }
 
+function showAlert(type, message) {
+  $('body').prepend("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-" + type + "' role='alert'>" + message + "</div>");
+
+  hideAlert();
+}
+
 function getPosts() {
   $.ajax({
-    url: 'int/get-posts.php',
+    url: absolutePath + '/int/get-posts.php',
     method: 'POST',
     dataType: 'json'
   }).done(function(response) {
     response.forEach(function(i) {
       var status = (i.status == 'public') ? 'checked' : '';
       
-      $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 fw-bold text-dark-emphasis' style='overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; text-overflow: ellipsis; -webkit-box-orient: vertical;'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
+      $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(/assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 blog-article-title fw-bold text-dark-emphasis'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='../pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
     });
 
     // set post id for delete form
@@ -36,7 +44,7 @@ function getPosts() {
       var statusPost = ($(this).is(':checked')) ? 'public' : 'private';
   
       $.ajax({
-        url: 'int/change-post-status.php',
+        url: absolutePath + '/int/change-post-status.php',
         method: 'POST',
         dataType: 'json',
         data: JSON.stringify({
@@ -44,11 +52,9 @@ function getPosts() {
           status: statusPost
         })
       }).done(function() {
-        $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post status has been changed.</div>");
-        hideAlerts();
+        showAlert('success', 'Post status changed');
       }).fail(function() {
-        $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to change post status!</div>");
-        hideAlerts();
+        showAlert('warning', 'Post status not changed');
       });
     });
   }).fail(function() {
@@ -59,17 +65,34 @@ function getPosts() {
 $(window).ready(function() {
   getPosts();
 
-  hideAlerts();
+  hideAlert();
+
+  var allowedExtensions = ['image/png', 'image/jpeg', 'image/webp'];
+
+  $('#thumbnail').on('change', function(e) {  
+    var file = e.currentTarget.files[0];
+
+    if(!allowedExtensions.includes(file.type)) {
+      showAlert('warning', 'File extension not allowed (only: png, jpg, webp)');
+      $(this).val('');
+    } else if(file.size > 2097152) {
+      showAlert('warning', 'File too large. Max size: 2 MB');
+      $(this).val('');
+    }
+  });
   
   // checks if text-editor length is smaller than required 
-  $('#addPostForm').submit(function(e) {
+  $('#addPostForm, #editPostForm').submit(function(e) {
     var contentLength = $('.blog-chars-counter').find('span').text();
-    
+
     if(contentLength < 500) {
       e.preventDefault();
 
-      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Only " + (500 - contentLength)  + " characters left.</div>");
-      hideAlerts();
+      showAlert('warning', (500 - contentLength) + ' characters left to reach minimum post length');
+    } else if(contentLength > 5000) {
+      e.preventDefault();
+
+      showAlert('warning', 'Maximum post length exceeded');
     }
   });
 
@@ -80,20 +103,18 @@ $(window).ready(function() {
     var postId = $(this).find('input[name=post_id]').val(); 
   
     $.ajax({
-      url: 'int/delete-post.php',
+      url: absolutePath + '/int/delete-post.php',
       method: 'POST',
       dataType: 'json',
       data: JSON.stringify({
         post_id: postId
       })
     }).done(function() {
-      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post has been deleted.</div>");
+      showAlert('light', 'Post deleted');
       $('#postsContainer').html('');
       getPosts();
-      hideAlerts();
     }).fail(function() {
-      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to delete post!</div>");
-      hideAlerts();
+      showAlert('danger', 'Post not deleted');
     });
 
     $(this).find('.btn-close').click();
@@ -119,12 +140,13 @@ $(window).ready(function() {
 // text-editor plugin set options
 sceditor.create($('#text-editor')[0], {
 	format: 'bbcode',
-  plugins: 'plaintext, undo, autosave',
-	style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css',
   height: '500px',
   resizeEnabled: false,
   emoticonsEnabled: false,
-  toolbar: 'bold,italic,underline,strike|left,center,right,justify|size,removeformat|bulletlist,orderedlist,indent,outdent|horizontalrule,link',
+  enablePasteFiltering: true,
+  plugins: 'plaintext, undo, autosave',
+  toolbar: 'bold,italic,underline,strike|left,center,right,justify|size,removeformat|bulletlist,orderedlist,indent,outdent|horizontalrule,image,link',
+  style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css',
 });
 
 // count chars of the text-editor
@@ -142,4 +164,4 @@ function getCharsLength() {
   }
 }
 
-sceditor.instance($('#text-editor')[0]).keyUp(getCharsLength).nodeChanged(getCharsLength);
+sceditor.instance($('#text-editor')[0]).nodeChanged(getCharsLength).keyUp(getCharsLength);

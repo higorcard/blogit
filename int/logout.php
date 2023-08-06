@@ -4,6 +4,6 @@
   session_unset();
   session_destroy();
 
-  header('Location: ../?logout');
+  header('Location: ../?page=1&logout');
 
 ?>

@@ -2,13 +2,13 @@
 
   header('Content-Type: application/json');
 
-  require_once 'config.php';
-
   session_start();
+
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
 
 	$data = json_decode(file_get_contents('php://input'));
 
-  if(isset($_SESSION['user_id']) && isset($data->post_id)) {
+  if(isset($_SESSION['user_id'], $data->post_id)) {
     $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
 	  $post_id = filter_var($data->post_id, FILTER_SANITIZE_NUMBER_INT);
     

@@ -1,5 +1,6 @@
 <?php
 
+	require_once '../int/config.php';
 	require_once '../int/check-login.php';
 
 	require_once 'partials/header.php';
