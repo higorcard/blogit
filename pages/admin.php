@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 	require_once '../int/check-login.php';
 
 	require_once 'partials/header.php';
-	
+
 ?>
 
 <div class="row d-flex mb-5" id="postsContainer" style="gap: 24px;"></div>

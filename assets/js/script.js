@@ -44,10 +44,10 @@ function getPosts() {
           status: statusPost
         })
       }).done(function() {
-        $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post status has been changed.</div>");
+        $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post status has been changed.</div>");
         hideAlerts();
       }).fail(function() {
-        $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to change post status!</div>");
+        $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to change post status!</div>");
         hideAlerts();
       });
     });
@@ -68,7 +68,7 @@ $(window).ready(function() {
     if(contentLength < 500) {
       e.preventDefault();
 
-      $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Only " + (500 - contentLength)  + " characters left.</div>");
+      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Only " + (500 - contentLength)  + " characters left.</div>");
       hideAlerts();
     }
   });
@@ -87,12 +87,12 @@ $(window).ready(function() {
         post_id: postId
       })
     }).done(function() {
-      $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post has been deleted.</div>");
+      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-success' role='alert'>Post has been deleted.</div>");
       $('#postsContainer').html('');
       getPosts();
       hideAlerts();
     }).fail(function() {
-      $('body').append("<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to delete post!</div>");
+      $('body').append("<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Unable to delete post!</div>");
       hideAlerts();
     });
 
@@ -123,7 +123,8 @@ sceditor.create($('#text-editor')[0], {
 	style: 'https://cdn.jsdelivr.net/npm/sceditor@3/minified/themes/default.min.css',
   height: '500px',
   resizeEnabled: false,
-  toolbar: 'bold,italic,underline,strike|left,center,right,justify|size,removeformat|bulletlist,orderedlist,indent,outdent|horizontalrule,link'
+  emoticonsEnabled: false,
+  toolbar: 'bold,italic,underline,strike|left,center,right,justify|size,removeformat|bulletlist,orderedlist,indent,outdent|horizontalrule,link',
 });
 
 // count chars of the text-editor

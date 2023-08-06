@@ -17,6 +17,8 @@
 
       if(password_verify($password, $data['password'])) {
         $_SESSION['user_id'] = $data['id'];
+
+        // TODO: redirect to last page in history
         header('Location: ../?success');
       } else {
         header('Location: ../pages/sign-in.php/?fail');

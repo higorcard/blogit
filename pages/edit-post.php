@@ -28,7 +28,7 @@
   ];
 
   if(isset($_GET['no_changes'])) {
-		echo "<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>There were no changes.</div>";
+		echo "<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>There were no changes.</div>";
   }
   
   if(isset($_POST['title']) && isset($_POST['content'])) {
@@ -54,7 +54,7 @@
           header('Location: ?post_id=' . $post_id . '&no_changes');
         }
       } else {
-        echo "<div class='position-absolute top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Enter at least 500 characters.</div>";
+        echo "<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-warning' role='alert'>Post content is too short. Enter at least 500 characters.</div>";
       }
     }
   } elseif(isset($_GET['post_id'])) {
@@ -75,7 +75,7 @@
   
 ?>
 
-<form class="row w-100 mt-3" method="post" id="editPostForm" action="<?= $_SERVER['PHP_SELF'] ?>">
+<form class="row w-100 mt-3 mb-5" method="post" id="editPostForm" action="<?= $_SERVER['PHP_SELF'] ?>">
   <div class="col-12 d-flex justify-content-between align-items-center px-0 mb-4">
     <p class="fs-2 fw-bold text-dark-emphasis p-0 mb-0" id="commentsSection">Update post</p>
     <button class="btn btn-light fs-5" type="submit"><i class="bi bi-upload me-2"></i>Update</button>

@@ -48,12 +48,17 @@ a {
       height: 310px;
       padding-left: 0;
     }
-    &-text {
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
+    &-title, &-text {
       overflow: hidden;
+      display: -webkit-box;
       text-overflow: ellipsis;
+      -webkit-box-orient: vertical;
+    }
+    &-title {
+      -webkit-line-clamp: 2;
+    }
+    &-text {
+      -webkit-line-clamp: 4;
     }
   }
 
@@ -113,6 +118,19 @@ a {
     display: block !important;
     text-overflow: ellipsis;
     overflow: hidden;
+
+    & * {
+      padding: 0 !important;
+    }
+    & ul, ol {
+      &, li {
+        padding-left: revert !important;
+      }
+
+      br {
+        display: none !important;
+      }
+    }
   }
 }
 
@@ -145,6 +163,8 @@ a {
   .blog-article {
     div:first-child {
       border-radius: 0.75rem 0.75rem 0 0 !important;
+      border: 1px solid rgba(108,117,125, 1) !important;
+      border-bottom: none !important;
     }
     div:last-child {
       padding-left: 0 !important;

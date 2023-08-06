@@ -185,12 +185,17 @@ a:hover span {
   height: 310px;
   padding-left: 0;
 }
-.blog-article-text {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
+.blog-article-title, .blog-article-text {
   overflow: hidden;
+  display: -webkit-box;
   text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+}
+.blog-article-title {
+  -webkit-line-clamp: 2;
+}
+.blog-article-text {
+  -webkit-line-clamp: 4;
 }
 .blog-post-thumb {
   height: 300px;
@@ -245,6 +250,15 @@ a:hover span {
   text-overflow: ellipsis;
   overflow: hidden;
 }
+.blog-post-content * {
+  padding: 0 !important;
+}
+.blog-post-content ul, .blog-post-content ul li, .blog-post-content ol, .blog-post-content ol li {
+  padding-left: revert !important;
+}
+.blog-post-content ul br, .blog-post-content ol br {
+  display: none !important;
+}
 
 .form-control:focus {
   border-color: #949494;
@@ -272,6 +286,8 @@ a:hover span {
 @media (max-width: 768px) {
   .blog-article div:first-child {
     border-radius: 0.75rem 0.75rem 0 0 !important;
+    border: 1px solid rgb(108, 117, 125) !important;
+    border-bottom: none !important;
   }
   .blog-article div:last-child {
     padding-left: 0 !important;
