@@ -84,7 +84,7 @@
     }
   }
   
-  if(isset($_POST['comment'])) {
+  if(isset($_POST['post_id'], $_POST['comment'])) {
     if(!empty($_POST['comment'])) {
       $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
       $post_id = filter_input(INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT);
@@ -94,12 +94,12 @@
       $sql->bindValue(':u_i', $user_id);
       $sql->execute();
 
-      $user = $sql->fetch(PDO::FETCH_ASSOC);
+      $author = $sql->fetch(PDO::FETCH_ASSOC)['name'];
       
       $sql = $pdo->prepare("INSERT INTO comments (post_id, user_id, author, text) VALUES (:p_i, :u_i, :a, :t)");
       $sql->bindValue(':p_i', $post_id);
       $sql->bindValue(':u_i', $user_id);
-      $sql->bindValue(':a', $user['name']);
+      $sql->bindValue(':a', $author);
       $sql->bindValue(':t', $comment);
       $sql->execute();
 

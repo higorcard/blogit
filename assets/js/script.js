@@ -96,7 +96,6 @@ $(window).ready(function() {
     }
   });
 
-  // performs the deletion of the post
   $('#deleteModal').submit(function(e) {
     e.preventDefault();
   
@@ -120,7 +119,7 @@ $(window).ready(function() {
     $(this).find('.btn-close').click();
   });
   
-  // edit text-editor default styles
+  // text-editor default styles
   var textEditorHtml = $("iframe").contents().find('html');
   var textEditorHead = $("iframe").contents().find('head');
   var textEditorBody = $("iframe").contents().find('body');

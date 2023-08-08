@@ -8,27 +8,26 @@
     header('Location: ../?page=1&logged');
   }
 
-  if(isset($_POST['email'])) {
+  if(isset($_POST['email'], $_POST['password']) && strlen($_POST['email']) >= 5 && strlen($_POST['password']) >= 8) {
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    if(strlen($email) >= 5 && strlen($password) >= 8) {
-      $sql = $pdo->prepare("SELECT * FROM users WHERE email = :e");
-      $sql->bindValue(':e', $email);
-      $sql->execute();
+    $sql = $pdo->prepare("SELECT * FROM users WHERE email = :e");
+    $sql->bindValue(':e', $email);
+    $sql->execute();
 
-      $data = $sql->fetch(PDO::FETCH_ASSOC);
+    $user = $sql->fetch(PDO::FETCH_ASSOC);
 
-      if(password_verify($password, $data['password'])) {
-        $_SESSION['user_id'] = $data['id'];
+    if(password_verify($password, $user['password'])) {
+      $_SESSION['user_id'] = $user['id'];
 
-        header('Location: ../?page=1&success');
-      } else {
-        header('Location: ?fail');
-      }
+      // TODO: redirect to last page in history
+      header('Location: ../?success');
     } else {
-      header('Location: ?short_input');
+      header('Location: ../pages/sign-in.php/?fail');
     }
+  } else {
+    header('Location: ../pages/sign-in.php/?short_input');
   }
 
 ?>

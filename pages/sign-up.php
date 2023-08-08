@@ -8,33 +8,31 @@
     header('Location: ../?logged');
   }
 
-  if(isset($_POST['name'], $_POST['email'], $_POST['password'])) {
+  if(isset($_POST['name'], $_POST['email'], $_POST['password']) && strlen($_POST['name']) >= 3 && strlen($_POST['email']) >= 5 && strlen($_POST['password']) >= 8) {
     $name = filter_input(INPUT_POST, 'name', FILTER_SANITIZE_SPECIAL_CHARS);
     $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
     $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    if(strlen($name) >= 3 && strlen($email) >= 5 && strlen($password) >= 8) {
-      $password = password_hash($password, PASSWORD_DEFAULT);
+    $password = password_hash($password, PASSWORD_DEFAULT);
 
-      $sql = $pdo->prepare("SELECT * FROM users WHERE email = :e");
+    $sql = $pdo->prepare("SELECT * FROM users WHERE email = :e");
+    $sql->bindValue(':e', $email);
+    $sql->execute();
+
+    if($sql->rowCount() == 0) {
+      $sql = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:n, :e, :p)");
+      $sql->bindValue(':n', $name);
       $sql->bindValue(':e', $email);
+      $sql->bindValue(':p', $password);
       $sql->execute();
 
-      if($sql->rowCount() === 0) {
-        $sql = $pdo->prepare("INSERT INTO users (name, email, password) VALUES (:n, :e, :p)");
-        $sql->bindValue(':n', $name);
-        $sql->bindValue(':e', $email);
-        $sql->bindValue(':p', $password);
-        $sql->execute();
-
-        $_SESSION['user_id'] = $pdo->lastInsertId();
-        header('Location: ../?registered');
-      } else {
-        header('Location: ?fail');
-      }
+      $_SESSION['user_id'] = $pdo->lastInsertId();
+      header('Location: ../?registered');
     } else {
-      header('Location: ?short_input');
+      header('Location: ../pages/sign-up.php/?fail');
     }
+  } else {
+    header('Location: ../pages/sign-up.php/?short_input');
   }
 
 ?>
