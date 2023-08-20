@@ -1,5 +1,6 @@
 /docker-compose/
 /higorcard/
+/vendor/
 docker-compose.yml
 blogit.sql
 Dockerfile

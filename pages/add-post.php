@@ -3,6 +3,14 @@
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/check-login.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
+  require_once 'test.php';
+
+  session_start();
+  $_SESSION['user_id'] = 1;
+
+  $post = new Post;
+  $post->criar();
+  exit;
 
   $allowed_extensions = [
     'png',

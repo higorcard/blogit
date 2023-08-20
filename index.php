@@ -4,6 +4,18 @@
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
+	require_once $_SERVER['DOCUMENT_ROOT']. '/vendor/autoload.php';
+
+	$parser = new JBBCode\Parser();
+
+	$parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
+
+	$text = "The default codes include: [b]bold[/b], [i]italics[/i], [u]underlining[/u], ";
+	$text .= "[url=http://jbbcode.com]links[/url], [color=red]color![/color] and more.";
+
+	$parser->parse($text);
+
+	print $parser->getAsHtml();
 
 	if(isset($_GET['success'])) {
 		showAlert('success', 'Logged in');

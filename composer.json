@@ -1,0 +1,5 @@
+{
+    "require": {
+        "jbbcode/jbbcode": "^1.4"
+    }
+}
