@@ -1,0 +1,51 @@
+services:
+  php-apache2:
+    build:
+      args:
+        user: john-doe
+        uid: 1000
+      context: .
+      dockerfile: Dockerfile
+    image: blogit-php-apache2
+    container_name: blogit-php-apache2
+    ports:
+      - 80:80 
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+    networks:
+      - blogit
+
+  mysql:
+    image: mysql:8
+    command: --default-authentication-plugin=mysql_native_password --sql-mode=
+    container_name: blogit-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    expose:
+      - 3306
+    ports:
+      - 3306:3306
+    networks:
+      - blogit
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8080:80
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql:3306
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - blogit
+
+networks:
+  blogit:
+    driver: bridge
