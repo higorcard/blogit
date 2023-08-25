@@ -3,33 +3,32 @@
   session_start();
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
 
-  if(isset($_SESSION['user_id'])) {
+  $DB = new DB($pdo);
+
+  if($_SESSION['user_id']) {
     header('Location: ../?page=1&logged');
   }
 
-  if(isset($_POST['email'], $_POST['password']) && strlen($_POST['email']) >= 5 && strlen($_POST['password']) >= 8) {
-    $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-    $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
+  if($_POST['email'] && $_POST['password']) {
+    if(strlen($_POST['email']) >= 5 && strlen($_POST['password']) >= 8) {
+      $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
+      $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_SPECIAL_CHARS);
 
-    $sql = $pdo->prepare("SELECT * FROM users WHERE email = :e");
-    $sql->bindValue(':e', $email);
-    $sql->execute();
+      $user = $DB->table('users')->where('email', '=', $email)->get()[0];
 
-    $user = $sql->fetch(PDO::FETCH_ASSOC);
+      if(password_verify($password, $user['password'])) {
+        $_SESSION['user_id'] = $user['id'];
 
-    if(password_verify($password, $user['password'])) {
-      $_SESSION['user_id'] = $user['id'];
-
-      // TODO: redirect to last page in history
-      header('Location: ../?success');
+        header('Location: ../../?success');
+      } else {
+        header('Location: ?fail');
+      }
     } else {
-      header('Location: ../pages/sign-in.php/?fail');
+      header('Location: ?short_input');
     }
-  } else {
-    header('Location: ../pages/sign-in.php/?short_input');
   }
-
 ?>
 
 <!DOCTYPE html>

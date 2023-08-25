@@ -1,5 +1,5 @@
 {
     "require": {
-        "jbbcode/jbbcode": "^1.4"
+        "genert/bbcode": "^1.1"
     }
 }

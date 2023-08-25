@@ -3,60 +3,30 @@
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/check-login.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
 
-	if(isset($_GET['no_changes'])) {
+  if(isset($_GET['no_changes'])) {
 		showAlert('warning', 'No changes made');
 	}
 
-  $allowed_extensios = [
-    'png',
-    'jpg',
-    'jpeg',
-    'webp',
-  ];
+  $DB = new DB($pdo);
 
-  $special_chars = [
-    '[hr]',
-    '[/size]',
-    '[size=1]',
-    '[size=2]',
-    '[size=3]',
-    '[size=4]',
-    '[size=5]',
-    '[size=6]',
-    '[size=7]',
-    '[b]', '[/b]',
-    '[i]', '[/i]',
-    '[u]', '[/u]',
-    '[s]', '[/s]',
-    '[ul]', '[/ul]',
-    '[ol]', '[/ol]',
-    '[li]', '[/li]',
-    '[left]', '[/left]',
-    '[right]', '[/right]',
-    '[center]', '[/center]',
-    '[justify]', '[/justify]'
-  ];
-  
-  if(isset($_GET['post_id'])) {
+  use Genert\BBCode\BBCode;
+	$bbCode = new BBCode();
+
+  if($_GET['post_id']) {
     $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT);
     
-    $sql = $pdo->prepare("SELECT * FROM posts WHERE id = :p_i");
-    $sql->bindValue(':p_i', $post_id);
-    $sql->execute();
+    $post = $DB->table('posts')->getById($post_id)[0];
+  }
 
-    if($sql->rowCount() > 0) {
-      $post = $sql->fetch(PDO::FETCH_ASSOC);
-    } else {
-      header('Location: admin.php');
-    }
-  } else {
+  if(!$post) {
     header('Location: admin.php');
   }
 
   if(isset($_POST['title'], $_POST['content'])) {
-    $content_sanitized = preg_replace(array('/\s{2,}/', '/\[url\=(.*?)\]/', '/\[\/url\]/', '/[\t\n]/'), '', str_replace($special_chars, '', $_POST['content']));
-    
+    $content_sanitized = $bbCode->stripBBCodeTags($_POST['content']);
     if(strlen($_POST['title']) >= 5) {
       if(strlen($content_sanitized) >= 500) {
         $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
@@ -64,50 +34,26 @@
         $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
         $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $sql = $pdo->prepare("SELECT * FROM posts WHERE NOT id = :p_i AND title = :t");
-        $sql->bindValue(':p_i', $post_id, PDO::PARAM_INT);
-        $sql->bindValue(':t', $title);
-        $sql->execute();
+        $totalPosts = $DB->table('posts')->notWhere('id', '=', $post_id)->where('title', '=', $title)->count();
 
-        if($sql->rowCount() == 0) {
-          if($_FILES['thumbnail']['name'] != '') {
-            $extension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
-            $folder = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/';
-            $tmp_name = $_FILES['thumbnail']['tmp_name'];
-            $new_name = uniqid().".$extension";
-
-            if(in_array($extension, $allowed_extensios)) {
-              if(move_uploaded_file($tmp_name, $folder.$new_name)) {
-                $thumbnail = filter_var($new_name, FILTER_SANITIZE_SPECIAL_CHARS);
-              } else {
-                showAlert('danger', 'File upload error');
-              }
-            } else {
-                showAlert('danger', 'File extension not allowed (only: png, jpg, webp)');
-            }
-          } else {
-            $thumbnail = $post['thumbnail'];
-          }
+        if($totalPosts == 0) {
+          $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
           
-          if(!empty($thumbnail)) {
-            $sql = $pdo->prepare("UPDATE posts SET title = :t, text = :c, thumbnail = :tn WHERE id = :p_i AND user_id = :u_i");
-            $sql->bindValue(':t', $title);
-            $sql->bindValue(':c', $content);
-            $sql->bindValue(':tn', $thumbnail);
-            $sql->bindValue(':p_i', $post_id);
-            $sql->bindValue(':u_i', $user_id);
-            $sql->execute();
+          $result = $DB->table('posts')->where('id', '=', $post_id)->where('user_id', '=', $user_id)->update([
+            'title' => $title,
+            'text' => $content,
+            'thumbnail' => $thumbnail,
+          ]);
 
-            if($sql->rowCount() > 0) {
-              // delete last post thumbnail
-              if($post['thumbnail'] != 'default.jpg' && $post['thumbnail'] != $thumbnail) {
-		            $folder = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/';
-								unlink($folder.$post['thumbnail']);
-              }
-              header('Location: post.php?post=' . urlencode($title) . '&edited');
-            } else {
-              header('Location: ?post_id=' . $post_id . '&no_changes');
+          if($result) {
+            // delete last post thumbnail
+            if($post['thumbnail'] != 'default.jpg' && $post['thumbnail'] != $thumbnail) {
+              $folder = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/';
+              unlink($folder.$post['thumbnail']);
             }
+            header('Location: post.php?post=' . urlencode($title) . '&edited');
+          } else {
+            header('Location: ?post_id=' . $post_id . '&no_changes');
           }
         } else {
           showAlert('danger', 'Title is already in use'); 

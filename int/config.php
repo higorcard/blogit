@@ -1,5 +1,4 @@
 <?php
-
   date_default_timezone_set('America/Sao_Paulo');
 
   define('ROOT', 'http://localhost');
@@ -8,7 +7,7 @@
     'dbname' => 'blogit',
     'host' => 'mysql',
     'username' => 'root',
-    'password' => 'blogit_db_pass'
+    'password' => 'db_password'
   ];
 
   try {
@@ -16,5 +15,3 @@
   } catch(Exception $error) {
     echo $error->getMessage();
   }
-
-?>

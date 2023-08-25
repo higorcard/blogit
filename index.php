@@ -1,21 +1,17 @@
 <?php
-	
 	session_start();
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
-	require_once $_SERVER['DOCUMENT_ROOT']. '/vendor/autoload.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
 
-	$parser = new JBBCode\Parser();
+  $DB = new DB($pdo);
 
-	$parser->addCodeDefinitionSet(new JBBCode\DefaultCodeDefinitionSet());
+  use Genert\BBCode\BBCode;
+	$bbCode = new BBCode();
 
-	$text = "The default codes include: [b]bold[/b], [i]italics[/i], [u]underlining[/u], ";
-	$text .= "[url=http://jbbcode.com]links[/url], [color=red]color![/color] and more.";
-
-	$parser->parse($text);
-
-	print $parser->getAsHtml();
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/int/parser-list.php';
 
 	if(isset($_GET['success'])) {
 		showAlert('success', 'Logged in');
@@ -27,13 +23,12 @@
 		showAlert('light', 'Logged out');
 	}
 
-	$data = getPosts($_GET['page'] ?? 1);
-	list($posts, $current_page, $total_pages, $total_items_pagination) = $data;
+	$page = filter_input(INPUT_GET, 'page', FILTER_SANITIZE_NUMBER_INT);
+	
+	list($posts, $current_page, $total_pages, $total_items_pagination) = getPosts($page ?? 1);
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/pages/partials/header.php';
-	
 ?>
-
 <div class="row p-4 p-md-5 mb-5 rounded-3 bg-body-secondary align-items-center">
 	<div class="col-lg-6 col-md-12 px-0">
 		<h1 class="blog-primary-font fst-italic text-body-emphasis blog-hero-h1" style="font-size: 3rem;">Find what you <br class="d-none d-lg-block">want here!</h1>
@@ -45,78 +40,19 @@
 		</form>
 	</div>
 </div>
-
 <?php
-
 	if(isset($posts)) :
 		foreach($posts as $post) :
-			$post_id = filter_var($post['id'], FILTER_SANITIZE_NUMBER_INT);
+			$total_comments = $DB->table('comments')->where('post_id', '=', $post['id'])->count();
 
-			$sql = $pdo->prepare("SELECT * FROM comments WHERE post_id = :p_i");
-			$sql->bindValue(':p_i', $post_id);
-			$sql->execute();
-
-			$total_comments = $sql->rowCount();
-
-			if($total_comments > 1) {
-				$comments_quantity = $total_comments . ' comments';
-			} elseif($total_comments == 1) {
-				$comments_quantity = $total_comments . ' comment';
-			} else {
-				$comments_quantity = 'No comments';
-			}
-
-			$special_chars = [
-				'/\&\#13\;\&\#10\;/',
-				'/\[hr\]/',
-				'/\[\/size\]/',
-				'/\[size=1\]/',
-				'/\[size=2\]/',
-				'/\[size=3\]/',
-				'/\[size=4\]/',
-				'/\[size=5\]/',
-				'/\[size=6\]/',
-				'/\[size=7\]/',
-				'/\[\/url\]/',
-				'/\[b\]/',
-				'/\[\/b\]/',
-				'/\[i\]/',
-				'/\[\/i\]/',
-				'/\[u\]/',
-				'/\[\/u\]/',
-				'/\[s\]/',
-				'/\[\/s\]/',
-				'/\[ul\]/',
-				'/\[\/ul\]/',
-				'/\[ol\]/',
-				'/\[\/ol\]/',
-				'/\[li\]/',
-				'/\[\/li\]/',
-				'/\[left\]/',
-				'/\[\/left\]/',
-				'/\[right\]/',
-				'/\[\/right\]/',
-				'/\[center\]/',
-				'/\[\/center\]/',
-				'/\[justify\]/',
-				'/\[\/justify\]/',
-			];
-			
-			$new_text = preg_replace($special_chars, ' ', $post['text']);
-			
-			preg_match_all('/\[url\=(.*?)\]/', $new_text, $matches, PREG_PATTERN_ORDER);
-			
-			foreach($matches[1] as $value) {
-				$new_text = preg_replace('/\[url\=(.*?)\]/', ' ', $new_text, 1);
-			}
-
+			$comments_quantity = getCommentsQuantity($total_comments);
 ?>
 	<div class="row mb-5 blog-article">
 		<div class="col-sm-12 col-lg-5 col-md-6 p-0 rounded-3 border border-3 border-light" style="background-image: url(assets/img/<?= $post['thumbnail'] ?>);"></div>
 		<div class="col-sm-12 col-lg-7 col-md-6 d-flex flex-column ps-4 pe-0">
 			<h2 class="fs-2 blog-article-title blog-text-ellipsis fw-bold fst-italic text-dark-emphasis"><?= $post['title'] ?></h2>
 			<p class="fs-5 mb-4 text-secondary"><?= date('M d, Y', strtotime($post['created_at'])) . ' · ' . $comments_quantity ?></p>
-			<p class="fs-5 blog-article-text"><?= nl2br($new_text); ?></p>
+			<p class="fs-5 blog-article-text"><?= nl2br($bbCode->stripBBCodeTags($post['text'])); ?></p>
 			<a class="fs-5 mt-auto text-dark-emphasis" href="<?= ROOT ?>/pages/post.php?post=<?= urlencode($post['title']) ?>">Continue reading <i class="bi bi-arrow-right"></i></a>
 		</div>
 	</div>

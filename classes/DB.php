@@ -85,7 +85,7 @@
 
 			$sql = $this->execute($query);
 
-			return $sql->fetch(PDO::FETCH_ASSOC);
+			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
 		public function delete()
 		{
@@ -118,9 +118,9 @@
 
 			$query = "INSERT INTO $this->table ($columns) VALUES ($values)";
 
-			$sql = $this->execute($query);
+			$this->execute($query);
 
-			return $sql->rowCount();
+			return $this->connection->lastInsertId();
 		}
 		public function join($table1, $table2, $column1, $column2)
 		{
@@ -174,7 +174,7 @@
 		private function resetAttributes()
 		{
 			$this->table = '';
-			$this->columns = '';
+			$this->columns = '*';
 			$this->where = [];
 			$this->orderBy = '';
 			$this->limit = '';
