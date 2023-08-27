@@ -3,20 +3,18 @@
     echo "<div class='position-fixed z-3 top-0 start-50 translate-middle-x mt-3 row alert alert-$type' role='alert'>$message</div>";
   }
 
-  function getPosts($page, $search = NULL, $type = NULL) {
-    global $DB;
-    
+  function getPosts($page, $search = NULL, $type = NULL) {    
     $results_limit = 10;
 		$min_items_pagination = 5;
 
     if($type == 'search') {
       $current_page = $page ?? 1;
       
-      $total_posts = $DB->raw("SELECT COUNT(id) count FROM posts WHERE status = 'public' AND (title LIKE :0 OR text LIKE :0)", ["%$search%"])->fetch(PDO::FETCH_ASSOC)['count'];
+      $total_posts = DB::raw("SELECT COUNT(id) count FROM posts WHERE status = 'public' AND (title LIKE :0 OR text LIKE :0)", ["%$search%"])->fetch(PDO::FETCH_ASSOC)['count'];
     } else {
       $current_page = $page;
 
-      $total_posts = $DB->table('posts')->where('status', '=', 'public')->count();
+      $total_posts = DB::table('posts')->where('status', '=', 'public')->count();
     }
 
 		$total_pages = ceil($total_posts / $results_limit);
@@ -33,10 +31,10 @@
 		$index = ($current_page * $results_limit) - $results_limit;
 
     if($type == 'search') {      
-      $posts = $DB->raw("SELECT * FROM posts WHERE status = 'public' AND (title LIKE :0 OR text LIKE :0) ORDER BY posts.created_at DESC LIMIT $index, $results_limit", ["%$search%"])->fetchAll(PDO::FETCH_ASSOC);
+      $posts = DB::raw("SELECT * FROM posts WHERE status = 'public' AND (title LIKE :0 OR text LIKE :0) ORDER BY posts.created_at DESC LIMIT $index, $results_limit", ["%$search%"])->fetchAll(PDO::FETCH_ASSOC);
 
     } else {
-      $posts = $DB->table('posts')->where('status', '=', 'public')->orderBy('posts.created_at DESC')->limit("$index, $results_limit")->get();
+      $posts = DB::table('posts')->where('status', '=', 'public')->orderBy('posts.created_at DESC')->limit("$index, $results_limit")->get();
     }
 		
 		if($posts) {
@@ -55,27 +53,14 @@
   }
 
   function setThumbnail($thumbnail) {
-    $allowed_extensions = [
-      'png',
-      'jpg',
-      'jpeg',
-      'webp',
-    ];
-
     if(!empty($thumbnail)) {
       $extension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
       $folder = $_SERVER['DOCUMENT_ROOT'] . '/assets/img/';
       $tmp_name = $_FILES['thumbnail']['tmp_name'];
       $new_name = uniqid().".$extension";
 
-      if(in_array($extension, $allowed_extensions)) {
-        if(move_uploaded_file($tmp_name, $folder.$new_name)) {
-          return $new_name;
-        } else {
-          showAlert('danger', 'File upload error');
-        }
-      } else {
-          showAlert('danger', 'File extension not allowed (only: png, jpg, webp)');
+      if(move_uploaded_file($tmp_name, $folder.$new_name)) {
+        return $new_name;
       }
     }
 

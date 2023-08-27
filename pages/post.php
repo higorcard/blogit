@@ -1,14 +1,11 @@
 <?php
-
   session_start();
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
-
-  $DB = new DB($pdo);
-
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Comment.php';
+  
   use Genert\BBCode\BBCode;
 	$bbCode = new BBCode();
 
@@ -21,47 +18,33 @@
 	} elseif(isset($_GET['comment_created'])) {
 		showAlert('success', 'Comment posted');
 	} elseif(isset($_GET['comment_deleted'])) {
-		showAlert('light', 'Comment deleted');
+    showAlert('light', 'Comment deleted');
   }
+  
+  $post_title = urldecode(filter_input(INPUT_GET, 'post', FILTER_SANITIZE_SPECIAL_CHARS));
+  
+  $post = DB::table('posts')->columns('posts.id, posts.user_id, posts.title, posts.text, posts.thumbnail, posts.created_at, posts.updated_at, users.name AS author')->where('title', '=', $post_title)->where('status', '=', 'public')->join('posts', 'users', 'user_id', 'id')[0];
 
-  if($_GET['post']) {
-    $post_title = urldecode(filter_input(INPUT_GET, 'post', FILTER_SANITIZE_SPECIAL_CHARS));
+  if($post) {
+    $page_title = ' | ' . $post['title'];
+
+    $last_update = getElapsedTime($post['updated_at']);
+
+    $comments = Comment::getAll($post['id']);
     
-    $post = $DB->table('posts')->columns('posts.id, posts.user_id, posts.title, posts.text, posts.thumbnail, posts.created_at, posts.updated_at, users.name AS author')->where('title', '=', $post_title)->where('status', '=', 'public')->join('posts', 'users', 'user_id', 'id')[0];
+    $total_comments = count($comments);
 
-    if($post) {
-      $page_title = ' | ' . $post['title'];
-
-      $last_update = getElapsedTime($post['updated_at']);
-
-      $comments = $DB->table('comments')->where('post_id', '=', $post['id'])->orderBy('comments.created_at DESC')->get();
-      
-      $total_comments = count($comments);
-
-      $comments_quantity = getCommentsQuantity($total_comments);
-    } else {
-      header('Location: ../?page=1');
-    }
+    $comments_quantity = getCommentsQuantity($total_comments);
   } else {
     header('Location: ../?page=1');
   }
   
   if($_POST['post_id'] && $_POST['comment']) {
     if(!empty($_POST['comment'])) {
-      $user_id = $_SESSION['user_id'];
       $post_id = filter_input(INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT);
       $comment = filter_input(INPUT_POST, 'comment', FILTER_SANITIZE_SPECIAL_CHARS);
 
-      $author = $DB->table('users')->getById($user_id)[0]['name'];
-      
-      $result = $DB->table('comments')->create([
-        'post_id' => $post_id,
-        'user_id' => $user_id,
-        'author' => $author,
-        'text' => $comment,
-      ]);
-
-      if(!empty($result)) {
+      if(Comment::create($user_id, $post_id, $comment)) {
         header('Location: ?post=' . $post['title'] . '&comment_created');
       } else {
 		    showAlert('danger', 'Comment post error');
@@ -72,12 +55,9 @@
   }
 
   if($_POST['delete_comment_id']) {
-    $user_id = $_SESSION['user_id'];
     $comment_id = filter_input(INPUT_POST, 'delete_comment_id', FILTER_SANITIZE_NUMBER_INT);
 
-    $result = $DB->table('comments')->where('id', '=', $comment_id)->where('user_id', '=', $user_id)->delete();
-
-    if($result) {
+    if(Comment::delete($user_id, $comment_id)) {
       header('Location: ?post=' . $post['title'] . '&comment_deleted');
     } else {
 		  showAlert('danger', 'Comment delete error');
@@ -85,7 +65,6 @@
   }
 
   require_once 'partials/header.php';
-  
 ?>
 
 <div class="row position-relative">
@@ -106,8 +85,8 @@
   <p class="d-flex justify-content-between align-items-center fs-2 fw-bold text-dark-emphasis border-bottom mb-5 pb-3 px-0" id="commentsSection">Comments <span class="fs-5 fw-normal blog-post-info"><?= $comments_quantity; ?></span></p>
 
   <?php
-    if(isset($_SESSION['user_id']) && $_SESSION['user_id'] != $post['user_id']) :
-      $name = $DB->table('users')->getById($_SESSION['user_id'])[0]['name'];
+    if($user_id != $post['user_id']) :
+      $name = User::getById($user_id)['name'];
   ?>
     <div class="col-12 d-flex mt-1 mb-4 px-0 blog-form-comment" style="gap: 24px;">
       <div class="d-flex fs-3 fst-italic text-body-emphasis bg-black blog-profile-photo blog-primary-font align-items-center justify-content-center rounded-circle"><?= substr($name, 0,1); ?></div>
@@ -129,7 +108,7 @@
       <div class="row w-100" style="max-width: calc(100% - 88px)">
         <div class="blog-post-info fs-5 d-flex justify-content-between align-items-center mb-2">
           <p class="m-0"><span class="fs-4 fw-bold text-dark-emphasis"><?= $comment['author']; ?></span> · <?= (isset($creation_time)) ? $creation_time . ' ago' : 'Now' ; ?></p>
-          <?php if($comment['user_id'] == $_SESSION['user_id']) : ?>
+          <?php if($comment['user_id'] == $user_id) : ?>
             <form method="POST" action="<?= $_SERVER['PHP_SELF'] . '?post=' . $post['title']; ?>">
               <input type="hidden" name="delete_comment_id" value="<?= $comment['id']; ?>">
               <button class="btn btn-link link-danger link-offset-5-hover link-underline-opacity-0 link-underline-opacity-100-hover fs-5 p-0 border-0" type="submit">delete</button>

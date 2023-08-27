@@ -4,9 +4,7 @@
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
-
-  $DB = new DB($pdo);
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Comment.php';
 
   use Genert\BBCode\BBCode;
 	$bbCode = new BBCode();
@@ -24,7 +22,7 @@
 
 	if($posts) :
 		foreach($posts as $post) :
-			$total_comments = $DB->table('comments')->where('post_id', '=', $post['id'])->count();
+			$total_comments = count(Comment::getAll($post['id']));
 
 			$comments_quantity = getCommentsQuantity($total_comments);
 ?>

@@ -22,7 +22,7 @@ function getPosts() {
       response.forEach(function(i) {
         var status = (i.status == 'public') ? 'checked' : '';
         
-        $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(/assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 blog-article-title fw-bold text-dark-emphasis'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='../pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
+        $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(/assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 blog-article-title fw-bold text-dark-emphasis'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + " style='cursor: pointer'><label class='form-check-label' for='switch" + i.id + "' style='cursor: pointer'>" + i.status + "</label></div><a href='../pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal' style='cursor: pointer'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
       });
   
       // set post id for delete form
@@ -112,7 +112,7 @@ $(window).ready(function() {
       data: JSON.stringify({
         post_id: postId
       })
-    }).done(function(response) {
+    }).always(function(response) {
       if(response) {
         showAlert('light', 'Post deleted');
         $('#postsContainer').html('');

@@ -1,16 +1,15 @@
 <?php
+  session_start();
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/check-login.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Post.php';
 
   if(isset($_GET['no_changes'])) {
 		showAlert('warning', 'No changes made');
 	}
-
-  $DB = new DB($pdo);
 
   use Genert\BBCode\BBCode;
 	$bbCode = new BBCode();
@@ -18,7 +17,7 @@
   if($_GET['post_id']) {
     $post_id = filter_input(INPUT_GET, 'post_id', FILTER_SANITIZE_NUMBER_INT);
     
-    $post = $DB->table('posts')->getById($post_id)[0];
+    $post = Post::getById($user_id, $post_id);
   }
 
   if(!$post) {
@@ -29,22 +28,15 @@
     $content_sanitized = $bbCode->stripBBCodeTags($_POST['content']);
     if(strlen($_POST['title']) >= 5) {
       if(strlen($content_sanitized) >= 500) {
-        $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
         $post_id = filter_input(INPUT_POST, 'post_id', FILTER_SANITIZE_NUMBER_INT);
         $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
         $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $totalPosts = $DB->table('posts')->notWhere('id', '=', $post_id)->where('title', '=', $title)->count();
-
-        if($totalPosts == 0) {
-          $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
+        $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
           
-          $result = $DB->table('posts')->where('id', '=', $post_id)->where('user_id', '=', $user_id)->update([
-            'title' => $title,
-            'text' => $content,
-            'thumbnail' => $thumbnail,
-          ]);
+        $result = Post::edit($user_id, $post_id, $title, $content, $thumbnail);
 
+        if($result != 'exists') {
           if($result) {
             // delete last post thumbnail
             if($post['thumbnail'] != 'default.jpg' && $post['thumbnail'] != $thumbnail) {
@@ -63,8 +55,8 @@
       }
     }
   }
-  require_once 'partials/header.php';
 
+  require_once 'partials/header.php';
 ?>
 
 <form class="row w-100 mt-3 mb-5" method="post" id="editPostForm" action="<?= $_SERVER['PHP_SELF'] . '?post_id=' . $post['id'] ?>" enctype="multipart/form-data">

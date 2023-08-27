@@ -1,7 +1,8 @@
 <?php
-	class DB
+	require_once 'Connection.php';
+
+	class DB extends Connection
 	{
-		private $connection;
 		private $table;
 		private $columns;
 		private $where;
@@ -9,9 +10,10 @@
 		private $limit;
 		private $data;
 
-		public function __construct($conn)
+		public function __construct()
 		{
-			$this->connection = $conn;
+			Connection::__construct();
+
 			$this->columns = '*';
 			$this->where = [];
 			$this->orderBy = '';
@@ -19,19 +21,20 @@
 			$this->data = [];
 		}
 
-		public function table($tableName)
+		public static function table(string $tableName): object
 		{
-			$this->table = $tableName;
+			$instance = new self();
+			$instance->table = $tableName;
 
-			return $this;
+			return $instance;
 		}
-		public function columns($columns)
+		public function columns(string $columns): object
 		{
 			$this->columns = $columns;
 
 			return $this;
 		}
-		public function where($column, $operator, $value)
+		public function where(string $column, string $operator, $value): object
 		{
 			$whereArray = ['condition' => "$column $operator :$column", $column => $value];
 			
@@ -39,7 +42,7 @@
 
 			return $this;
 		}
-		public function orWhere($column, $operator, $value)
+		public function orWhere(string $column, string $operator, $value): object
 		{
 			$whereArray = ['operator' => ' OR ', 'condition' => "$column $operator :$column", $column => $value];
 			
@@ -47,7 +50,7 @@
 
 			return $this;
 		}
-		public function notWhere($column, $operator, $value)
+		public function notWhere(string $column, string $operator, $value): object
 		{
 			$whereArray = ['operator' => ' NOT ', 'condition' => "$column $operator :$column", $column => $value];
 			
@@ -55,20 +58,20 @@
 
 			return $this;
 		}
-		public function orderBy($order)
+		public function orderBy(string $order): object
 		{
 			$this->orderBy = 'ORDER BY ' . $order;
 
 			return $this;
 		}
-		public function limit($limit)
+		public function limit($limit): object
 		{
 			$this->limit = 'LIMIT ' . $limit;
 
 			return $this;
 		}
 
-		public function get()
+		public function get(): array
 		{
 			$condition = $this->getCondition($this->where);
 			$query = "SELECT $this->columns FROM $this->table WHERE $condition $this->orderBy $this->limit";
@@ -77,7 +80,7 @@
 
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
-		public function getById($id)
+		public function getById(int $id): array
 		{
 			$this->data = ['id' => $id];
 			
@@ -85,9 +88,9 @@
 
 			$sql = $this->execute($query);
 
-			return $sql->fetchAll(PDO::FETCH_ASSOC);
+			return $sql->fetch(PDO::FETCH_ASSOC);
 		}
-		public function delete()
+		public function delete(): int
 		{
 			$condition = $this->getCondition($this->where);
 			$query = "DELETE FROM $this->table WHERE $condition";
@@ -96,7 +99,7 @@
 
 			return $sql->rowCount();
 		}
-		public function update($data)
+		public function update(array $data): int
 		{
 			$this->data = $data;
 
@@ -109,7 +112,7 @@
 
 			return $sql->rowCount();
 		}
-		public function create($data)
+		public function create(array $data): int
 		{
 			$this->data = $data;
 
@@ -122,7 +125,7 @@
 
 			return $this->connection->lastInsertId();
 		}
-		public function join($table1, $table2, $column1, $column2)
+		public function join(string $table1, string $table2, string $column1, string $column2): array
 		{
 			$condition = $this->getCondition($this->where);
 			$query = "SELECT $this->columns FROM $table1 INNER JOIN $table2 ON $table1.$column1 = $table2.$column2 WHERE $condition $this->orderBy $this->limit";
@@ -131,7 +134,7 @@
 
 			return $sql->fetchAll(PDO::FETCH_ASSOC);
 		}
-		public function count()
+		public function count(): int
 		{
 			$condition = $this->getCondition($this->where);
 			$query = "SELECT COUNT(*) count FROM $this->table WHERE $condition";
@@ -140,11 +143,12 @@
 
 			return $sql->fetch(PDO::FETCH_ASSOC)['count'];
 		}
-		public function raw($query, $data = [])
+		public static function raw(string $query, array $data = []): object
 		{
-			$this->data = $data;
+			$instance = new self();
+			$instance->data = $data;
 
-			return $this->execute($query);
+			return $instance->execute($query);
 		}
 
 		private function getCondition()
@@ -171,16 +175,7 @@
 			
 			return 1;
 		}
-		private function resetAttributes()
-		{
-			$this->table = '';
-			$this->columns = '*';
-			$this->where = [];
-			$this->orderBy = '';
-			$this->limit = '';
-			$this->data = [];
-		}
-		private function execute($query)
+		private function execute(string $query): object
 		{
 			$sql = $this->connection->prepare($query);
 			for($i = 0; $i < count($this->where); $i++) {
@@ -197,8 +192,6 @@
 				} 
 			}
 			$sql->execute();
-
-			$this->resetAttributes();
 
 			return $sql;
 		}

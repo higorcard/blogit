@@ -4,9 +4,7 @@
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
-
-  $DB = new DB($pdo);
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Comment.php';
 
   use Genert\BBCode\BBCode;
 	$bbCode = new BBCode();
@@ -29,6 +27,7 @@
 
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/pages/partials/header.php';
 ?>
+
 <div class="row p-4 p-md-5 mb-5 rounded-3 bg-body-secondary align-items-center">
 	<div class="col-lg-6 col-md-12 px-0">
 		<h1 class="blog-primary-font fst-italic text-body-emphasis blog-hero-h1" style="font-size: 3rem;">Find what you <br class="d-none d-lg-block">want here!</h1>
@@ -40,10 +39,11 @@
 		</form>
 	</div>
 </div>
+
 <?php
-	if(isset($posts)) :
+	if($posts) :
 		foreach($posts as $post) :
-			$total_comments = $DB->table('comments')->where('post_id', '=', $post['id'])->count();
+			$total_comments = count(Comment::getAll($post['id']));
 
 			$comments_quantity = getCommentsQuantity($total_comments);
 ?>
@@ -57,9 +57,9 @@
 		</div>
 	</div>
 <?php
-	endforeach;
+		endforeach;
 
-	if($total_pages > 1):
+		if($total_pages > 1):
 ?>
 	<nav class="mb-5">
 		<ul class="pagination justify-content-center">

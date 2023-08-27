@@ -1,12 +1,11 @@
 <?php
+  session_start();
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/check-login.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
 	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
-  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/DB.php';
-
-  $DB = new DB($pdo);
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Post.php';
 
   use Genert\BBCode\BBCode;
 	$bbCode = new BBCode();
@@ -15,23 +14,15 @@
     $content_sanitized = $bbCode->stripBBCodeTags($_POST['content']);
     if(strlen($_POST['title']) >= 5) {
       if(strlen($content_sanitized) >= 500) {
-        $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
         $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
         $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $totalPosts = $DB->table('posts')->where('title', '=', $title)->count();
+        $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
 
-        if($totalPosts == 0) {
-          $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
-          
-          $result = $DB->table('posts')->create([
-            'user_id' => $user_id,
-            'title' => $title,
-            'text' => $content,
-            'thumbnail' => $thumbnail,
-          ]);
+        $result = Post::create($user_id, $title, $content, $thumbnail);
 
-          if(!empty($result)) {
+        if($result != 'exists') {
+          if($result) {
             header('Location: post.php?post=' . urlencode($title) . '&success');
           } else {
             showAlert('danger', 'Error creating post');
@@ -48,7 +39,6 @@
   }
 
   require_once 'partials/header.php';
-
 ?>
 
 <form class="row w-100 mt-3 mb-5" method="post" id="addPostForm" action="<?= $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">

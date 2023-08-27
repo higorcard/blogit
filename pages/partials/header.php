@@ -1,5 +1,4 @@
 <?php
-
 	$page_name = basename($_SERVER['PHP_SELF']);
 
 	switch ($page_name) {
@@ -24,7 +23,6 @@
 			$page_title = NULL;
 			break;
 	}
-
 ?>
 
 <!DOCTYPE html>
