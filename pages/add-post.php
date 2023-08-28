@@ -1,83 +1,31 @@
 <?php
+  session_start();
 
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/config.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/check-login.php';
   require_once $_SERVER['DOCUMENT_ROOT'] . '/int/functions.php';
+	require_once $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+  require_once $_SERVER['DOCUMENT_ROOT'] . '/classes/Post.php';
 
-  $allowed_extensions = [
-    'png',
-    'jpg',
-    'jpeg',
-    'webp',
-  ];
-  
-  $special_chars = [
-    '[hr]',
-    '[/size]',
-    '[size=1]',
-    '[size=2]',
-    '[size=3]',
-    '[size=4]',
-    '[size=5]',
-    '[size=6]',
-    '[size=7]',
-    '[b]', '[/b]',
-    '[i]', '[/i]',
-    '[u]', '[/u]',
-    '[s]', '[/s]',
-    '[ul]', '[/ul]',
-    '[ol]', '[/ol]',
-    '[li]', '[/li]',
-    '[left]', '[/left]',
-    '[right]', '[/right]',
-    '[center]', '[/center]',
-    '[justify]', '[/justify]'
-  ];
+  use Genert\BBCode\BBCode;
+	$bbCode = new BBCode();
   
   if(isset($_POST['title'], $_POST['content'])) {
-    $content_sanitized = preg_replace(array('/\s{2,}/', '/\[url\=(.*?)\]/', '/\[\/url\]/', '/[\t\n]/'), '', str_replace($special_chars, '', $_POST['content']));
-    
+    $content_sanitized = $bbCode->stripBBCodeTags($_POST['content']);
     if(strlen($_POST['title']) >= 5) {
       if(strlen($content_sanitized) >= 500) {
-        $user_id = filter_var($_SESSION['user_id'], FILTER_SANITIZE_NUMBER_INT);
         $title = filter_input(INPUT_POST, 'title', FILTER_SANITIZE_SPECIAL_CHARS);
         $content = filter_input(INPUT_POST, 'content', FILTER_SANITIZE_SPECIAL_CHARS);
 
-        $sql = $pdo->prepare("SELECT * FROM posts WHERE title = :t");
-        $sql->bindValue(':t', $title);
-        $sql->execute();
+        $thumbnail = setThumbnail($_FILES['thumbnail']['name']);
 
-        if($sql->rowCount() == 0) {
-          if($_FILES['thumbnail']['name'] != '') {
-            $extension = pathinfo($_FILES['thumbnail']['name'], PATHINFO_EXTENSION);
-            $folder = '../assets/img/';
-            $tmp_name = $_FILES['thumbnail']['tmp_name'];
-            $new_name = uniqid().".$extension";
+        $result = Post::create($user_id, $title, $content, $thumbnail);
 
-            if(in_array($extension, $allowed_extensions)) {
-              if(move_uploaded_file($tmp_name, $folder.$new_name)) {
-                $thumbnail = filter_var($new_name, FILTER_SANITIZE_SPECIAL_CHARS);
-              } else {
-                showAlert('danger', 'File upload error');
-              }
-            } else {
-                showAlert('danger', 'File extension not allowed (only: png, jpg, webp)');
-            }
+        if($result != 'exists') {
+          if($result) {
+            header('Location: post.php?post=' . urlencode($title) . '&success');
           } else {
-            $thumbnail = 'default.jpg';
-          }
-          
-          if(!empty($thumbnail)) {
-            $sql = $pdo->prepare("INSERT INTO posts (user_id, title, text, thumbnail) VALUES (:u_i, :t, :c, :tn)");
-            $sql->bindValue(':u_i', $user_id);
-            $sql->bindValue(':t', $title);
-            $sql->bindValue(':c', $content);
-            $sql->bindValue(':tn', $thumbnail);
-            $sql->execute();
-
-            if($sql->rowCount() > 0) {
-              header('Location: post.php?post=' . urlencode($title) . '&success');
-            }
+            showAlert('danger', 'Error creating post');
           }
         } else {
           showAlert('danger', 'Title is already in use'); 
@@ -85,11 +33,12 @@
       } else {
         showAlert('warning', 'Minimum post length is 500 characters');
       }
+    } else {
+      showAlert('warning', 'Minimum title length is 5 characters');
     }
   }
 
   require_once 'partials/header.php';
-
 ?>
 
 <form class="row w-100 mt-3 mb-5" method="post" id="addPostForm" action="<?= $_SERVER['PHP_SELF'] ?>" enctype="multipart/form-data">

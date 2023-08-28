@@ -18,47 +18,51 @@ function getPosts() {
     method: 'POST',
     dataType: 'json'
   }).done(function(response) {
-    response.forEach(function(i) {
-      var status = (i.status == 'public') ? 'checked' : '';
-      
-      $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(/assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 blog-article-title fw-bold text-dark-emphasis'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + "><label class='form-check-label' for='switch" + i.id + "'>" + i.status + "</label></div><a href='../pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
-    });
-
-    // set post id for delete form
-    $('.btn-delete').on('click', function() {
-      $('input[name=post_id]').val($(this).attr('data-id'));
-    });
-
-    // toggle post status label
-    $('input[type=checkbox]').on('click', function() {
-      if($(this).is(':checked')) {
-        $(this).siblings('label').text('public');
-      } else {
-        $(this).siblings('label').text('private');
-      }
-    });
-
-    // toggle post status in db
-    $('input[type=checkbox]').on('click', function() {
-      var postId = $(this).attr('data-id');
-      var statusPost = ($(this).is(':checked')) ? 'public' : 'private';
-  
-      $.ajax({
-        url: absolutePath + '/int/change-post-status.php',
-        method: 'POST',
-        dataType: 'json',
-        data: JSON.stringify({
-          post_id: postId,
-          status: statusPost
-        })
-      }).done(function() {
-        showAlert('success', 'Post status changed');
-      }).fail(function() {
-        showAlert('warning', 'Post status not changed');
+    if(response.length) {
+      response.forEach(function(i) {
+        var status = (i.status == 'public') ? 'checked' : '';
+        
+        $('#postsContainer').append("<div class='card col-lg-4 col-md-6 col-sm-12 px-0 blog-card'><div class='card-body' style='background-image: url(/assets/img/" + i.thumbnail + ");'></div><div class='card-footer d-flex flex-column justify-content-between'><p class='fs-4 blog-article-title fw-bold text-dark-emphasis'>" + i.title + "</p><div class='d-flex justify-content-between'><div class='form-check form-switch'><input class='form-check-input' type='checkbox' role='switch' id='switch" + i.id + "' data-id='" + i.id + "' " + status + " style='cursor: pointer'><label class='form-check-label' for='switch" + i.id + "' style='cursor: pointer'>" + i.status + "</label></div><a href='../pages/edit-post.php?post_id=" + i.id + "' class='ms-auto me-4'><i class='bi bi-pencil fs-5 text-dark-emphasis'></i></a><a class='btn-delete' data-id='" + i.id + "' data-bs-toggle='modal' data-bs-target='#deleteModal' style='cursor: pointer'><i class='bi bi-trash fs-5 text-dark-emphasis'></i></a></div></div></div>");
       });
-    });
-  }).fail(function() {
-    $('#postsContainer').append("<div class='position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center flex-column'><i class='bi bi-exclamation-circle display-1 text-center'></i><p class='fs-4 fw-medium text-center mt-2 px-0'>You have no posts to display</p><div>");
+  
+      // set post id for delete form
+      $('.btn-delete').on('click', function() {
+        $('input[name=post_id]').val($(this).attr('data-id'));
+      });
+  
+      // toggle post status label
+      $('input[type=checkbox]').on('click', function() {
+        if($(this).is(':checked')) {
+          $(this).siblings('label').text('public');
+        } else {
+          $(this).siblings('label').text('private');
+        }
+      });
+  
+      // toggle post status in db
+      $('input[type=checkbox]').on('click', function() {
+        var postId = $(this).attr('data-id');
+        var statusPost = ($(this).is(':checked')) ? 'public' : 'private';
+    
+        $.ajax({
+          url: absolutePath + '/int/change-post-status.php',
+          method: 'POST',
+          dataType: 'json',
+          data: JSON.stringify({
+            post_id: postId,
+            status: statusPost
+          })
+        }).done(function(response) {
+          if(response) {
+            showAlert('success', 'Post status changed');
+          } else {
+            showAlert('warning', 'Post status not changed');
+          }
+        });
+      });
+    } else {
+      $('#postsContainer').append("<div class='position-absolute top-50 start-50 translate-middle d-flex align-items-center justify-content-center flex-column'><i class='bi bi-exclamation-circle display-1 text-center'></i><p class='fs-4 fw-medium text-center mt-2 px-0'>You have no posts to display</p><div>");
+    }
   });
 }
 
@@ -108,12 +112,14 @@ $(window).ready(function() {
       data: JSON.stringify({
         post_id: postId
       })
-    }).done(function() {
-      showAlert('light', 'Post deleted');
-      $('#postsContainer').html('');
-      getPosts();
-    }).fail(function() {
-      showAlert('danger', 'Post not deleted');
+    }).always(function(response) {
+      if(response) {
+        showAlert('light', 'Post deleted');
+        $('#postsContainer').html('');
+        getPosts();
+      } else {
+        showAlert('danger', 'Post not deleted');
+      }
     });
 
     $(this).find('.btn-close').click();
@@ -140,6 +146,7 @@ $(window).ready(function() {
 sceditor.create($('#text-editor')[0], {
 	format: 'bbcode',
   height: '500px',
+  bbcodeTrim: true,
   resizeEnabled: false,
   emoticonsEnabled: false,
   enablePasteFiltering: true,
