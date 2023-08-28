@@ -73,7 +73,7 @@
 </div>
 
 <div class="row mt-3 mb-3">
-  <p class="col-sm-12 col-md-6 col-lg-6 p-0 fs-5 blog-post-info"><?php if(isset($last_update)) { echo "Updated $last_update ago · "; } ?><a class="text-secondary-emphasis <?= ($total_comments == 0) ? 'disabled' : ''?>" href="<?= $_SERVER['REQUEST_URI'] ?>#commentsSection"><?= $comments_quantity; ?></a></p>
+  <p class="col-sm-12 col-md-6 col-lg-6 p-0 fs-5 blog-post-info"><?php if(!empty($last_update)) { echo "Updated $last_update ago · "; } ?><a class="text-secondary-emphasis <?= ($total_comments == 0) ? 'disabled' : ''?>" href="<?= $_SERVER['REQUEST_URI'] ?>#commentsSection"><?= $comments_quantity; ?></a></p>
   <p class="col-sm-12 col-md-6 col-lg-6 p-0 fs-5 blog-post-info text-md-end text-lg-end"><?= date('M d, Y', strtotime($post['created_at'])) ?> by <a class="text-secondary-emphasis" disabled><?= $post['author'] ?></a></p>
 </div>
 
@@ -85,7 +85,7 @@
   <p class="d-flex justify-content-between align-items-center fs-2 fw-bold text-dark-emphasis border-bottom mb-5 pb-3 px-0" id="commentsSection">Comments <span class="fs-5 fw-normal blog-post-info"><?= $comments_quantity; ?></span></p>
 
   <?php
-    if($user_id != $post['user_id']) :
+    if($user_id AND $user_id != $post['user_id']) :
       $name = User::getById($user_id)['name'];
   ?>
     <div class="col-12 d-flex mt-1 mb-4 px-0 blog-form-comment" style="gap: 24px;">
@@ -101,13 +101,13 @@
   <?php
     if($comments) :
       foreach($comments as $comment) :
-        $creation_time = getElapsedTime($post['updated_at']);
+        $creation_time = getElapsedTime($comment['created_at']);
   ?>
     <div class="col-12 d-flex my-3 pb-2 border-bottom px-0 blog-comment">
       <div class="d-flex fs-3 fst-italic text-body-emphasis bg-secondary-subtle blog-profile-photo blog-primary-font align-items-center justify-content-center rounded-circle"><?= substr($comment['author'], 0,1); ?></div>
       <div class="row w-100" style="max-width: calc(100% - 88px)">
         <div class="blog-post-info fs-5 d-flex justify-content-between align-items-center mb-2">
-          <p class="m-0"><span class="fs-4 fw-bold text-dark-emphasis"><?= $comment['author']; ?></span> · <?= (isset($creation_time)) ? $creation_time . ' ago' : 'Now' ; ?></p>
+          <p class="m-0"><span class="fs-4 fw-bold text-dark-emphasis"><?= $comment['author']; ?></span> · <?= (!empty($creation_time)) ? $creation_time . ' ago' : 'Now' ; ?></p>
           <?php if($comment['user_id'] == $user_id) : ?>
             <form method="POST" action="<?= $_SERVER['PHP_SELF'] . '?post=' . $post['title']; ?>">
               <input type="hidden" name="delete_comment_id" value="<?= $comment['id']; ?>">

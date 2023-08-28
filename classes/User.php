@@ -1,13 +1,13 @@
 <?php
 	class User
 	{
-		public static function get(string $email): array
+		public static function get(string $email)
 		{
 			$data = DB::table('users')->where('email', '=', $email)->get()[0];
 
 			return $data;
 		}
-		public static function getById(int $id): array
+		public static function getById(int $id)
 		{
 			$data = DB::table('users')->getById($id);
 

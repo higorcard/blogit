@@ -3,7 +3,7 @@
 
 	class Comment
 	{
-		public static function getAll(int $postId): array
+		public static function getAll(int $postId)
 		{
 			$data = DB::table('comments')->where('post_id', '=', $postId)->orderBy('comments.created_at DESC')->get();
 

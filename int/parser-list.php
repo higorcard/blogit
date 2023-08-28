@@ -63,3 +63,9 @@
     '<hr>',
     ''
   );
+	$bbCode->addParser(
+    'br',
+    '/\[br\]/s',
+    '<br>',
+    ''
+  );
