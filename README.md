@@ -13,13 +13,44 @@ Welcome to **Blogit**, a blogging platform built using Vanilla PHP and AJAX. Wit
 - **Comment Section**: Engage with your readers through the comment section available on each blog post. Foster discussions and receive feedback from your audience.
 
 ## Installation
-1. Clone the repository: **git clone https://github.com/higorcard/blogit.git**
+### Prerequisites
+Before you begin, ensure you have the following prerequisites installed:
 
-2. Navigate to the project directory: **cd blogit**
+- Docker: [Installation Guide](https://docs.docker.com/get-docker/)
 
-3. Set up your database credentials in **config.php**.
+- Docker Compose: [Installation Guide](https://docs.docker.com/compose/install/)
 
-4. Import the **'blogit.sql'** file to set up the required database tables.
+### Getting Started
+1. Clone this repository:
+```shell
+git clone https://github.com/higorcard/blogit.git
+
+cd blogit
+```
+
+2. Edit the .env file with your desired configuration.
+
+3. Build and start the Docker containers:
+```shell
+sudo docker-compose up -d
+```
+
+4. Install Composer (if not installed):
+  - If Composer isn't already installed, get it from [Installation Guide](https://getcomposer.org/download/).
+
+5. Run Composer
+  - In your terminal, navigate to your project directory and run:
+  ```shell
+  composer install
+  ```
+
+3. Set up your database credentials in **classes/Connection.php**.
+
+5. Access http://localhost:8080 in your web browser.
+  - Username: **root**
+  - Password: (use the password defined in your **.env file**)
+
+5. Once logged in, import the **'blogit.sql'** file through the phpMyAdmin panel.
 
 5. Launch the application using a local development server.
 
